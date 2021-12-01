@@ -8,7 +8,6 @@ function getDepths() {
 
 async function main() {
   const depths = await getDepths();
-  console.log(depths);
   const depthIncreaseCount = depths.reduce((acc, curr, index) => {
     return acc + (curr > depths[index - 1] ? 1 : 0)
   }, 0);
