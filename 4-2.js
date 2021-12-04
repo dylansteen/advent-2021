@@ -20,9 +20,7 @@ async function main() {
 
     if (cards.length > 1) {
       cards = filterWinners(cards);
-    }
-
-    if (cards.length === 1 && isWinningCard(cards[0]) || isWinningCard(transpose(cards[0]))) {
+    } else if (isWinningCard(cards[0]) || isWinningCard(transpose(cards[0]))) {
       const result = getResult(cards[0], bingoNumber);
       console.log(result);
       break;
