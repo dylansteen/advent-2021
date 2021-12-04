@@ -2,7 +2,7 @@ const util = require('util');
 const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
 
-const transpose = (matrix) => matrix[0].map((x,i) => matrix.map(x => x[i]));
+const transpose = (matrix) => matrix[0].map((_,i) => matrix.map(x => x[i]));
 const onesComp = binArr => binArr.map(digit => digit === '1' ? '0' : '1');
 
 function getBinaryInput() { 
