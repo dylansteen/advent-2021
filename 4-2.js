@@ -11,11 +11,13 @@ function getData() {
 }
 
 async function main() {
-  const [numbers, originalCards] = (await getData());
+  const [numbers, originalCards] = await getData();
 
   let cards = clone(originalCards);
+
   for (const bingoNumber of numbers) {
     cards = call(bingoNumber, cards);
+
     if (cards.length > 1) {
       cards = filterWinners(cards);
     }
@@ -34,9 +36,7 @@ const isWinningCard = card => card.some(row => row.every(space => space === 'X')
 
 const filterWinners = (bingoCards) => bingoCards.filter(card => !isWinningCard(card)).map(transpose).filter(card => !isWinningCard(card));
 
-const clone = (card) => (
-  [...card.map(row => [...row])]
-);
+const clone = (card) => ([...card.map(row => [...row])]);
 
 const getResult = (card, number)  => {
   return card.flat().map(x => +x).filter(x => !isNaN(x)).reduce((acc, curr) => acc + curr) * number;
