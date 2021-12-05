@@ -25,7 +25,6 @@ const isCardinal = (start, end, axis) => start[inverter[axis]] === end[inverter[
 
 const move = (current, destination) => current < destination ? current + 1 : current - 1;
 
-
 const drawPoint = (position, positionsMap) => {
   const stringPos = `${position.x}, ${position.y}`;
   if (!positionsMap[stringPos]) {
@@ -34,7 +33,6 @@ const drawPoint = (position, positionsMap) => {
     positionsMap[stringPos] += 1;
   }
 }
-
 
 const drawLine = (start, end, currentPoints, direction) => {
   if (isCardinal(start, end, direction)) {
@@ -55,7 +53,6 @@ async function main() {
   const data = await getData();
 
   const resultMap = data.reduce((acc, curr) => {
-
     const [start, end] = curr;
 
     drawLine(start, end, acc, 'y');
@@ -69,6 +66,3 @@ async function main() {
 }
 
 main();
-  
-
-

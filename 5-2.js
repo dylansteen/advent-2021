@@ -4,7 +4,15 @@ const readFile = util.promisify(fs.readFile);
 
 function getData() { 
   return readFile('input.txt', 'utf8').then((data) => { 
-    return data.split('\n').filter(line => !!line).map(line => line.split(' -> ').map(xAndY => xAndY.split(',').map(stringNum => +stringNum).reduce((acc, curr, index) => ({ ...acc, x: index === 0 ? curr : acc.x, y: index === 1 ? curr : acc.y}), {})));
+    return data
+      .split('\n')
+      .filter(line => !!line)
+      .map(line => 
+          line.split(' -> ')
+          .map(xAndY => 
+            xAndY.split(',')
+            .map(stringNum =>
+              +stringNum).reduce((acc, curr, index) => ({ ...acc, x: index === 0 ? curr : acc.x, y: index === 1 ? curr : acc.y}), {})));
   });
 }
 
@@ -26,34 +34,31 @@ const move = (current, destination) => {
   }
 }
 
+const drawPoint = (position, positionsMap) => {
+  const stringPos = `${position.x}, ${position.y}`;
+  if (!positionsMap[stringPos]) {
+    positionsMap[stringPos] = 1;
+  } else {
+    positionsMap[stringPos] += 1;
+  }
+}
+
 const drawLine = (start, end, currentPoints) => {
   let currPos = { ...start };
 
   while(!(currPos.x === end.x && currPos.y === end.y)) {
-    const stringPos = `${currPos.x}, ${currPos.y}`;
-    if (!currentPoints[stringPos]) {
-      currentPoints[stringPos] = 1;
-    } else {
-      currentPoints[stringPos] += 1;
-    }
-
+    drawPoint(currPos, currentPoints);
     move(currPos, end);
   }
 
-  const stringPos = `${currPos.x}, ${currPos.y}`;
-  if (!currentPoints[stringPos]) {
-    currentPoints[stringPos] = 1;
-  } else {
-    currentPoints[stringPos] += 1;
-  }
+  // Extra for destination point
+  drawPoint(currPos, currentPoints);
 }
 
 async function main() {
   const data = await getData();
 
-  const resultMap = data.reduce((acc, curr) => {
-
-    const [start, end] = curr;
+  const resultMap = data.reduce((acc, [start, end]) => {
 
     drawLine(start, end, acc);
 
@@ -65,6 +70,3 @@ async function main() {
 }
 
 main();
-  
-
-
