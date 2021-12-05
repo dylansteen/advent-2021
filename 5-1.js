@@ -1,67 +1,53 @@
 const util = require('util');
 const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
-const transpose = (matrix) => matrix[0].map((_,i) => matrix.map(x => x[i]));
 
 function getData() { 
   return readFile('input.txt', 'utf8').then((data) => { 
-    return data.split('\n').filter(line => !!line).map(line => line.split(' -> ').map(xAndY => xAndY.split(',').map(stringNum => +stringNum)));
+    return data
+      .split('\n')
+      .filter(line => !!line)
+      .map(line => 
+          line.split(' -> ')
+          .map(xAndY => 
+            xAndY.split(',')
+            .map(stringNum =>
+              +stringNum).reduce((acc, curr, index) => ({ ...acc, x: index === 0 ? curr : acc.x, y: index === 1 ? curr : acc.y}), {})));
   });
 }
 
-const isHorizontal = ([startX, startY], [endX, endY]) => startX === endX;
-const isVertical = ([startX, startY], [endX, endY]) => startY === endY;
+const inverter = {
+  'x': 'y',
+  'y': 'x',
+};
+
+const isCardinal = (start, end, axis) => start[inverter[axis]] === end[inverter[axis]];
 
 const move = (current, destination) => current < destination ? current + 1 : current - 1;
 
-const drawHorizontal = (start, end, currentPoints) => {
-  if (isHorizontal(start, end)) {
-    let currPos = [...start];
 
-    while(currPos[1] !== end[1]) {
-      const stringPos = currPos.map(String).join(',');
-      if (!currentPoints[stringPos]) {
-        currentPoints[stringPos] = 1;
-      } else {
-        currentPoints[stringPos] += 1;
-      }
-
-      currPos[1] = move(currPos[1], end[1]);
-    }
-    const stringPos = currPos.map(String).join(',');
-    if (!currentPoints[stringPos]) {
-      currentPoints[stringPos] = 1;
-    } else {
-      currentPoints[stringPos] += 1;
-    }
-
-    currPos[1] = move(currPos[1], end[1]);
+const drawPoint = (position, positionsMap) => {
+  const stringPos = `${position.x}, ${position.y}`;
+  if (!positionsMap[stringPos]) {
+    positionsMap[stringPos] = 1;
+  } else {
+    positionsMap[stringPos] += 1;
   }
 }
 
-const drawVertical = (start, end, currentPoints) => {
-  if (isVertical(start, end)) {
-    let currPos = [...start];
 
-    while(currPos[0] !== end[0]) {
-      const stringPos = currPos.map(String).join(',');
-      if (!currentPoints[stringPos]) {
-        currentPoints[stringPos] = 1;
-      } else {
-        currentPoints[stringPos] += 1;
-      }
+const drawLine = (start, end, currentPoints, direction) => {
+  if (isCardinal(start, end, direction)) {
+    let currPos = { ...start };
 
-      currPos[0] = move(currPos[0], end[0]);
+    while(currPos[direction] !== end[direction]) {
+      drawPoint(currPos, currentPoints);
+
+      currPos[direction] = move(currPos[direction], end[direction]);
     }
 
-    const stringPos = currPos.map(String).join(',');
-    if (!currentPoints[stringPos]) {
-      currentPoints[stringPos] = 1;
-    } else {
-      currentPoints[stringPos] += 1;
-    }
-
-    currPos[0] = move(currPos[0], end[0]);
+    // Extra for destination point
+    drawPoint(currPos, currentPoints);
   }
 }
 
@@ -72,8 +58,8 @@ async function main() {
 
     const [start, end] = curr;
 
-    drawHorizontal(start, end, acc);
-    drawVertical(start, end, acc);
+    drawLine(start, end, acc, 'y');
+    drawLine(start, end, acc, 'x');
 
     return acc;
   }, {});
