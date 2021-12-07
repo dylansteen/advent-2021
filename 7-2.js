@@ -15,7 +15,7 @@ async function main() {
   let currentPos = 0;
 
   while (currentPos <= furthestCrab) {
-    const fuelForPosition = positions.slice(0).reduce((totalFuel, currentCrab, _, arr) => { 
+    const fuelForPosition = positions.slice(0).reduce((totalFuel, currentCrab) => { 
       const newTotal = totalFuel + triangle(Math.abs(currentCrab - currentPos));
       return newTotal;
     }, 0);
