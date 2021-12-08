@@ -10,19 +10,6 @@ function getData() {
 
 const triangle = (n) => (n*(n+1))/2
 
-const triangles = {};
-
-const memoizedTriangle = (n) => {
-  const nThTriangle = triangles[n];
-  if (nThTriangle) {
-    return nThTriangle;
-  } else {
-    const triangleVal = triangle(n);
-    triangles[n] = triangleVal;
-    return triangleVal;
-  }
-}
-
 async function main() {
   const positions = await getData();
   const furthestCrab = Math.max(...positions);
